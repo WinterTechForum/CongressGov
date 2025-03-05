@@ -1,6 +1,6 @@
 run-wbs: 
 	uv sync
-	bash .venv/bin/activate
+	./.venv/bin/activate
 	uv run wbs-main.py
 
 tw:
