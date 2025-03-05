@@ -79,7 +79,7 @@ class MCPClient:
         while True:
             # Send a request to the LLM with available tools and current conversation context
             response = self.anthropic.messages.create(
-                model="claude-3-5-sonnet-20241022",
+                model="claude-3-7-sonnet-20250219",
                 max_tokens=1000,
                 messages=messages,
                 tools=available_tools

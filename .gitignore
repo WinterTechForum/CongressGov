@@ -11,5 +11,10 @@ wheels/
 .idea
 .env
 
+# log outputs
+congress_api.log
+
+# binaries
 tailwindcss
+
 
