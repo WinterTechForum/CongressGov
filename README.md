@@ -5,14 +5,14 @@ A client implementation for MCP with Anthropic integration.
 ## Requirements
 
 - Python 3.13 or higher
-- pip or uv package manager
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) package manager
 
 ## Setup Instructions
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
-   cd mcp-client
+   git clone git@github.com:WinterTechForum/CongressGov.git
+   cd CongressGov
    ```
 
 2. Create and activate a virtual environment:
@@ -30,29 +30,22 @@ A client implementation for MCP with Anthropic integration.
 
 3. Install dependencies:
    ```bash
-   uv sync  # Recommended
-   # Or alternatively with pip:
-   # pip install .
+   uv sync  
    ```
 
 4. Configure environment variables:
    - Create a `.env` file in the project root with the following content:
      ```
      ANTHROPIC_API_KEY=your_api_key_here
+     CONGRESS_GOV_KEY=congress_gov_api_key
      ```
    - Replace `your_api_key_here` with your actual Anthropic API key
+   - Replace `congress_gov_api_key` with your [Congress.gov API key](https://api.congress.gov/sign-up/)
 
 5. Running:
-   `python client.py weather/weather.py`
+   `uv run python client.py congress/congress.py`
 
-   If you have a separate tools server, replace `weather/weather.py` with the location of your server
-
-## Dependencies
-
-- anthropic (>=0.49.0): Anthropic API client
-- httpx (>=0.28.1): HTTP client
-- mcp[cli] (>=1.3.0): MCP CLI tools
-- python-dotenv (>=1.0.1): Environment variable management
+   If you have a separate tools server, replace `congress/congress.py` with the location of your server
 
 ## Environment Variables
 

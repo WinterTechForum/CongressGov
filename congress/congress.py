@@ -1,12 +1,12 @@
 from typing import Any
 
-import httpx
 from mcp.server import FastMCP
+from dotenv import load_dotenv, find_dotenv
+from cdg_client import CDGClient
+
+load_dotenv()  # load environment variables from .env
 
 mcp = FastMCP("congress")
-
-CONGRESS_API_BASE="https://api.congress.gov/v3"
-CONGRESS_API_KEY=<FILL IN>
 
 def format_bill(bill):
     return (f"{bill['type']} {bill['number']} ({bill['congress']}th Congress)\n"
@@ -21,10 +21,11 @@ async def get_bills() -> str:
     Returns:
         str: A formatted list of recent bills.
     """
-    url = f"{CONGRESS_API_BASE}/bill?format=json&limit=250&api_key={CONGRESS_API_KEY}"
-    data = await make_nws_request(url)
+    url = "bill?limit=250"
+    client = CDGClient()
+    data,status = client.get(url)
 
-    if not data or "bills" not in data:
+    if status != 200 or "bills" not in data:
         return "Unable to fetch bills, or no bills found."
 
     if not data["bills"]:
@@ -43,8 +44,12 @@ async def get_bills_by_congress(congress: int) -> str:
     Returns:
         str: A formatted list of bills from the specified congress.
     """
-    url = f"{CONGRESS_API_BASE}/bill/{congress}?format=json&limit=250&api_key={CONGRESS_API_KEY}"
-    return await fetch_and_format_bills(url)
+    url = f"bill/{congress}?limit=250"
+    client = CDGClient()
+    data,status = client.get(url)
+    if status != 200 or "bills" not in data:
+        return "Unable to fetch bills, or no bills found."
+    return data
 
 @mcp.tool()
 async def get_bills_by_congress_and_type(congress: int, bill_type: str) -> str:
@@ -57,8 +62,12 @@ async def get_bills_by_congress_and_type(congress: int, bill_type: str) -> str:
     Returns:
         str: A formatted list of bills matching the criteria.
     """
-    url = f"{CONGRESS_API_BASE}/bill/{congress}/{bill_type}?format=json&limit=250&api_key={CONGRESS_API_KEY}"
-    return await fetch_and_format_bills(url)
+    url = f"bill/{congress}/{bill_type}?limit=250"
+    client = CDGClient()
+    data,status = client.get(url)
+    if status != 200 or "bills" not in data:
+        return "Unable to fetch bills, or no bills found."
+    return data
 
 @mcp.tool()
 async def get_bill_details(congress: int, bill_type: str, bill_number: int) -> str:
@@ -72,8 +81,12 @@ async def get_bill_details(congress: int, bill_type: str, bill_number: int) -> s
     Returns:
         str: The details of the specified bill.
     """
-    url = f"{CONGRESS_API_BASE}/bill/{congress}/{bill_type}/{bill_number}?format=json&api_key={CONGRESS_API_KEY}"
-    return await fetch_and_format_bills(url)
+    url = f"bill/{congress}/{bill_type}/{bill_number}"
+    client = CDGClient()
+    data,status = client.get(url)
+    if status != 200 or "bills" not in data:
+        return "Unable to fetch bills, or no bills found."
+    return data
 
 @mcp.tool()
 async def get_bill_actions(congress: int, bill_type: str, bill_number: int) -> str:
@@ -87,8 +100,12 @@ async def get_bill_actions(congress: int, bill_type: str, bill_number: int) -> s
     Returns:
         str: A list of actions for the specified bill.
     """
-    url = f"{CONGRESS_API_BASE}/bill/{congress}/{bill_type}/{bill_number}/actions?format=json&api_key={CONGRESS_API_KEY}"
-    return await fetch_and_format_bills(url)
+    url = f"bill/{congress}/{bill_type}/{bill_number}/actions"
+    client = CDGClient()
+    data,status = client.get(url)
+    if status != 200 or "bills" not in data:
+        return "Unable to fetch bills, or no bills found."
+    return data
 
 @mcp.tool()
 async def get_bill_amendments(congress: int, bill_type: str, bill_number: int) -> str:
@@ -102,8 +119,12 @@ async def get_bill_amendments(congress: int, bill_type: str, bill_number: int) -
     Returns:
         str: A list of amendments for the specified bill.
     """
-    url = f"{CONGRESS_API_BASE}/bill/{congress}/{bill_type}/{bill_number}/amendments?format=json&api_key={CONGRESS_API_KEY}"
-    return await fetch_and_format_bills(url)
+    url = f"bill/{congress}/{bill_type}/{bill_number}/amendments"
+    client = CDGClient()
+    data,status = client.get(url)
+    if status != 200 or "bills" not in data:
+        return "Unable to fetch bills, or no bills found."
+    return data
 
 @mcp.tool()
 async def get_bill_titles(congress: int, bill_type: str, bill_number: int) -> str:
@@ -117,19 +138,12 @@ async def get_bill_titles(congress: int, bill_type: str, bill_number: int) -> st
     Returns:
         str: A list of titles for the specified bill.
     """
-    url = f"{CONGRESS_API_BASE}/bill/{congress}/{bill_type}/{bill_number}/titles?format=json&api_key={CONGRESS_API_KEY}"
-    return await fetch_and_format_bills(url)
+    url = f"bill/{congress}/{bill_type}/{bill_number}/titles"
+    client = CDGClient()
+    data,status = client.get(url)
+    if status != 200 or "bills" not in data:
+        return "Unable to fetch bills, or no bills found."
+    return data
 
-async def fetch_and_format_bills(url: str) -> str:
-    """Fetches and formats bill data from Congress.gov.
-    
-    Args:
-        url (str): The API endpoint URL to fetch data from.
-    
-    Returns:
-        str: The formatted response data or an error message.
-    """
-    data = await make_nws_request(url)
-    if not data:
-        return "No data available."
-    return str(data)
+if __name__ == "__main__":
+    mcp.run(transport='stdio')

@@ -6,7 +6,7 @@
 
 """
 from urllib.parse import urljoin
-
+import os
 import requests
 
 API_VERSION = "v3"
@@ -53,7 +53,7 @@ class CDGClient:
 
     def __init__(
             self,
-            api_key,
+            api_key=os.environ.get("CONGRESS_API_KEY"),
             api_version=API_VERSION,
             response_format=RESPONSE_FORMAT,
             raise_on_error=True,
