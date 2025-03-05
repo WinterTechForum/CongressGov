@@ -8,6 +8,7 @@
 from urllib.parse import urljoin
 import os
 import requests
+import logging
 
 API_VERSION = "v3"
 ROOT_URL = "https://api.congress.gov/"
@@ -22,15 +23,20 @@ class _MethodWrapper:
         self._method = getattr(parent._session, http_method)
 
     def __call__(self, endpoint, *args, **kwargs):  # full signature passed here
-        response = self._method(
-            urljoin(self._parent.base_url, endpoint), *args, **kwargs
-        )
-        # unpack
-        if response.headers.get("content-type", "").startswith("application/json"):
-            return response.json(), response.status_code
-        else:
-            return response.content, response.status_code
-
+        logger = logging.getLogger(__name__)
+        try:
+            response = self._method(
+                urljoin(self._parent.base_url, endpoint), *args, **kwargs
+            )
+            logger.debug("%s %d",response.url, response.status_code)
+            # unpack
+            if response.headers.get("content-type", "").startswith("application/json"):
+                return response.json(), response.status_code
+            else:
+                return response.content, response.status_code
+        except Exception as e:
+            logger.error("failed getting bills  %s",e)
+            return "API Failure",-1
 
 class CDGClient:
     """ A simple client to interface with Congress.gov.
@@ -53,7 +59,7 @@ class CDGClient:
 
     def __init__(
             self,
-            api_key=os.environ.get("CONGRESS_API_KEY"),
+            api_key=os.getenv("CONGRESS_API_KEY"),
             api_version=API_VERSION,
             response_format=RESPONSE_FORMAT,
             raise_on_error=True,
