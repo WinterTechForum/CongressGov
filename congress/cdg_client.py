@@ -59,7 +59,6 @@ class CDGClient:
 
     def __init__(
             self,
-            api_key=os.getenv("CONGRESS_API_KEY"),
             api_version=API_VERSION,
             response_format=RESPONSE_FORMAT,
             raise_on_error=True,
@@ -67,6 +66,8 @@ class CDGClient:
         self.base_url = urljoin(ROOT_URL, api_version) + "/"
         self._session = requests.Session()
 
+        api_key=os.environ["CONGRESS_API_KEY"]
+        
         # do not use url parameters, even if offered, use headers
         self._session.params = {"format": response_format}
         self._session.headers.update({"x-api-key": api_key})
