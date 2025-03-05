@@ -13,8 +13,6 @@ API_VERSION = "v3"
 ROOT_URL = "https://api.congress.gov/"
 RESPONSE_FORMAT = "json"
 
- # os.getenv("CONGRESS_API_KEY")
-
 
 class _MethodWrapper:
     """ Wrap request method to facilitate queries.  Supports requests signature. """
