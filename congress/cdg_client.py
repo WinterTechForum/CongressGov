@@ -13,6 +13,8 @@ API_VERSION = "v3"
 ROOT_URL = "https://api.congress.gov/"
 RESPONSE_FORMAT = "json"
 
+ # os.getenv("CONGRESS_API_KEY")
+
 
 class _MethodWrapper:
     """ Wrap request method to facilitate queries.  Supports requests signature. """
@@ -53,7 +55,6 @@ class CDGClient:
 
     def __init__(
             self,
-            api_key=os.environ.get("CONGRESS_API_KEY"),
             api_version=API_VERSION,
             response_format=RESPONSE_FORMAT,
             raise_on_error=True,
@@ -61,6 +62,8 @@ class CDGClient:
         self.base_url = urljoin(ROOT_URL, api_version) + "/"
         self._session = requests.Session()
 
+        api_key=os.environ["CONGRESS_API_KEY"]
+        
         # do not use url parameters, even if offered, use headers
         self._session.params = {"format": response_format}
         self._session.headers.update({"x-api-key": api_key})

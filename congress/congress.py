@@ -40,7 +40,6 @@ async def get_bills() -> str:
 
     env_path = f"{Path(__file__).parent.parent}/.env"
     dotenv_result = load_dotenv(env_path)
-    logger.info("loading from %s %s", env_path, os.environ.get("CONGRESS_API_KEY"))
     if not dotenv_result:
         logger.error(".env not found or not readable")
 
