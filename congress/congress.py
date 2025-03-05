@@ -6,6 +6,7 @@ from cdg_client import CDGClient
 from pathlib import Path
 import logging
 import os
+import json
 
 fh = logging.FileHandler('congress_api.log')
 fh.setLevel(logging.DEBUG)
@@ -36,30 +37,14 @@ async def get_bills() -> str:
     Returns:
         str: A formatted list of recent bills.
     """
-    logger.debug("get_bills() called")
-
-    env_path = f"{Path(__file__).parent.parent}/.env"
-    dotenv_result = load_dotenv(env_path)
-    if not dotenv_result:
-        logger.error(".env not found or not readable")
-
     url = "bill?limit=250"
     client = CDGClient()
-    try:
-        data,status = client.get(url)
-        if status != 200 or "bills" not in data:
-            logger.error(status)
-            return "Unable to fetch bills, or no bills found."
+    data,status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return "Unable to fetch bills, or no bills found."
 
-        if not data["bills"]:
-            return "No recent bills found."
-
-        logger.info(data)
-        bills = [format_bill(bill) for bill in data["bills"]]
-        return "\n---\n".join(bills)
-    except Exception as e:
-        logger.error("failed getting bills  %s",e)
-        return "Unable to fetch bills."
+    return data
 
 
 @mcp.tool()
@@ -75,7 +60,7 @@ async def get_bills_by_congress(congress: int) -> str:
     url = f"bill/{congress}?limit=250"
     client = CDGClient()
     data,status = client.get(url)
-    if status != 200 or "bills" not in data:
+    if status != 200:
         logger.error(status)
         return "Unable to fetch bills, or no bills found."
     return data
@@ -91,10 +76,10 @@ async def get_bills_by_congress_and_type(congress: int, bill_type: str) -> str:
     Returns:
         str: A formatted list of bills matching the criteria.
     """
-    url = f"bill/{congress}/{bill_type}?limit=250"
+    url = f"bill/{congress}/{bill_type.lower()}?limit=250"
     client = CDGClient()
-    data,status = client.get(url)
-    if status != 200 or "bills" not in data:
+    data, status = client.get(url)
+    if status != 200:
         logger.error(status)
         return "Unable to fetch bills, or no bills found."
     return data
@@ -111,12 +96,12 @@ async def get_bill_details(congress: int, bill_type: str, bill_number: int) -> s
     Returns:
         str: The details of the specified bill.
     """
-    url = f"bill/{congress}/{bill_type}/{bill_number}"
+    url = f"bill/{congress}/{bill_type.lower()}/{bill_number}"
     client = CDGClient()
-    data,status = client.get(url)
-    if status != 200 or "bills" not in data:
+    data, status = client.get(url)
+    if status != 200:
         logger.error(status)
-        return "Unable to fetch bills, or no bills found."
+        return "Unable to fetch bill details."
     return data
 
 @mcp.tool()
@@ -131,12 +116,12 @@ async def get_bill_actions(congress: int, bill_type: str, bill_number: int) -> s
     Returns:
         str: A list of actions for the specified bill.
     """
-    url = f"bill/{congress}/{bill_type}/{bill_number}/actions"
+    url = f"bill/{congress}/{bill_type.lower()}/{bill_number}/actions"
     client = CDGClient()
-    data,status = client.get(url)
-    if status != 200 or "bills" not in data:
+    data, status = client.get(url)
+    if status != 200:
         logger.error(status)
-        return "Unable to fetch bills, or no bills found."
+        return "Unable to fetch bill actions."
     return data
 
 @mcp.tool()
@@ -151,12 +136,132 @@ async def get_bill_amendments(congress: int, bill_type: str, bill_number: int) -
     Returns:
         str: A list of amendments for the specified bill.
     """
-    url = f"bill/{congress}/{bill_type}/{bill_number}/amendments"
+    url = f"bill/{congress}/{bill_type.lower()}/{bill_number}/amendments"
     client = CDGClient()
-    data,status = client.get(url)
-    if status != 200 or "bills" not in data:
+    data, status = client.get(url)
+    if status != 200:
         logger.error(status)
-        return "Unable to fetch bills, or no bills found."
+        return "Unable to fetch bill amendments."
+    return data
+
+@mcp.tool()
+async def get_bill_committees(congress: int, bill_type: str, bill_number: int) -> str:
+    """Get committees associated with a specific bill.
+    
+    Args:
+        congress (int): The congressional session number.
+        bill_type (str): The type of bill.
+        bill_number (int): The bill number.
+    
+    Returns:
+        str: A list of committees for the specified bill.
+    """
+    url = f"bill/{congress}/{bill_type.lower()}/{bill_number}/committees"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return "Unable to fetch committees, or no committees found."
+    return data
+
+@mcp.tool()
+async def get_bill_cosponsors(congress: int, bill_type: str, bill_number: int) -> str:
+    """Get cosponsors of a specific bill.
+    
+    Args:
+        congress (int): The congressional session number.
+        bill_type (str): The type of bill.
+        bill_number (int): The bill number.
+    
+    Returns:
+        str: A list of cosponsors for the specified bill.
+    """
+    url = f"bill/{congress}/{bill_type.lower()}/{bill_number}/cosponsors"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return "Unable to fetch cosponsors, or no cosponsors found."
+    return data
+
+@mcp.tool()
+async def get_bill_related(congress: int, bill_type: str, bill_number: int) -> str:
+    """Get related bills to a specific bill.
+    
+    Args:
+        congress (int): The congressional session number.
+        bill_type (str): The type of bill.
+        bill_number (int): The bill number.
+    
+    Returns:
+        str: A list of related bills for the specified bill.
+    """
+    url = f"bill/{congress}/{bill_type.lower()}/{bill_number}/relatedbills"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return "Unable to fetch related bills, or no related bills found."
+    return data
+
+@mcp.tool()
+async def get_bill_subjects(congress: int, bill_type: str, bill_number: int) -> str:
+    """Get legislative subjects of a specific bill.
+    
+    Args:
+        congress (int): The congressional session number.
+        bill_type (str): The type of bill.
+        bill_number (int): The bill number.
+    
+    Returns:
+        str: A list of legislative subjects for the specified bill.
+    """
+    url = f"bill/{congress}/{bill_type.lower()}/{bill_number}/subjects"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return "Unable to fetch subjects, or no subjects found."
+    return data
+
+@mcp.tool()
+async def get_bill_summaries(congress: int, bill_type: str, bill_number: int) -> str:
+    """Get summaries of a specific bill.
+    
+    Args:
+        congress (int): The congressional session number.
+        bill_type (str): The type of bill.
+        bill_number (int): The bill number.
+    
+    Returns:
+        str: A list of summaries for the specified bill.
+    """
+    url = f"bill/{congress}/{bill_type.lower()}/{bill_number}/summaries"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return "Unable to fetch summaries, or no summaries found."
+    return data
+
+@mcp.tool()
+async def get_bill_text(congress: int, bill_type: str, bill_number: int) -> str:
+    """Get text versions of a specific bill.
+    
+    Args:
+        congress (int): The congressional session number.
+        bill_type (str): The type of bill.
+        bill_number (int): The bill number.
+    
+    Returns:
+        str: A list of text versions for the specified bill.
+    """
+    url = f"bill/{congress}/{bill_type.lower()}/{bill_number}/text"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return "Unable to fetch bill text, or no text versions found."
     return data
 
 @mcp.tool()
@@ -171,13 +276,62 @@ async def get_bill_titles(congress: int, bill_type: str, bill_number: int) -> st
     Returns:
         str: A list of titles for the specified bill.
     """
-    url = f"bill/{congress}/{bill_type}/{bill_number}/titles"
+    url = f"bill/{congress}/{bill_type.lower()}/{bill_number}/titles"
     client = CDGClient()
-    data,status = client.get(url)
-    if status != 200 or "bills" not in data:
+    data, status = client.get(url)
+    if status != 200:
         logger.error(status)
-        return "Unable to fetch bills, or no bills found."
+        return "Unable to fetch titles, or no titles found."
     return data
+
+@mcp.tool()
+async def get_all_congresses() -> str:
+    """Get a list of all congresses and congressional sessions.
+
+    Returns:
+        str: A list of congresses and congressional sessions.
+    """
+    url = "congress"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return "Unable to fetch congress list, or no data found."
+    return data
+
+@mcp.tool()
+async def get_congress_details(congress: int) -> str:
+    """Get detailed information about a specific congress.
+
+    Args:
+        congress (int): The congressional session number.
+
+    Returns:
+        str: Detailed information about the specified congress.
+    """
+    url = f"congress/{congress}"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return f"Unable to fetch details for Congress {congress}, or no data found."
+    return data
+
+@mcp.tool()
+async def get_current_congress() -> str:
+    """Get detailed information about the current congress.
+
+    Returns:
+        str: Detailed information about the current congress.
+    """
+    url = "congress/current"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return "Unable to fetch details for the current congress, or no data found."
+    return data
+
 
 if __name__ == "__main__":
     logger.info("Running congress API")
