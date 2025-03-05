@@ -4,11 +4,12 @@ from mcp.server import FastMCP
 from dotenv import load_dotenv, find_dotenv
 from cdg_client import CDGClient
 from pathlib import Path
+import logging
 
 # load environment variables from .env in project root
 dotenv_result = load_dotenv(Path(__file__).parent.parent / '.env')
 if not dotenv_result:
-    print(".env not found or not readable")
+    logging.error(".env not found or not readable")
 
 mcp = FastMCP("congress")
 
@@ -30,7 +31,7 @@ async def get_bills() -> str:
     data,status = client.get(url)
 
     if status != 200 or "bills" not in data:
-        print(status)
+        logging.error(status)
         return "Unable to fetch bills, or no bills found."
 
     if not data["bills"]:
@@ -53,7 +54,7 @@ async def get_bills_by_congress(congress: int) -> str:
     client = CDGClient()
     data,status = client.get(url)
     if status != 200 or "bills" not in data:
-        print(status)
+        logging.error(status)
         return "Unable to fetch bills, or no bills found."
     return data
 
@@ -72,7 +73,7 @@ async def get_bills_by_congress_and_type(congress: int, bill_type: str) -> str:
     client = CDGClient()
     data,status = client.get(url)
     if status != 200 or "bills" not in data:
-        print(status)
+        logging.error(status)
         return "Unable to fetch bills, or no bills found."
     return data
 
@@ -92,7 +93,7 @@ async def get_bill_details(congress: int, bill_type: str, bill_number: int) -> s
     client = CDGClient()
     data,status = client.get(url)
     if status != 200 or "bills" not in data:
-        print(status)
+        logging.error(status)
         return "Unable to fetch bills, or no bills found."
     return data
 
@@ -112,7 +113,7 @@ async def get_bill_actions(congress: int, bill_type: str, bill_number: int) -> s
     client = CDGClient()
     data,status = client.get(url)
     if status != 200 or "bills" not in data:
-        print(status)
+        logging.error(status)
         return "Unable to fetch bills, or no bills found."
     return data
 
@@ -132,7 +133,7 @@ async def get_bill_amendments(congress: int, bill_type: str, bill_number: int) -
     client = CDGClient()
     data,status = client.get(url)
     if status != 200 or "bills" not in data:
-        print(status)
+        logging.error(status)
         return "Unable to fetch bills, or no bills found."
     return data
 
@@ -152,7 +153,7 @@ async def get_bill_titles(congress: int, bill_type: str, bill_number: int) -> st
     client = CDGClient()
     data,status = client.get(url)
     if status != 200 or "bills" not in data:
-        print(status)
+        logging.error(status)
         return "Unable to fetch bills, or no bills found."
     return data
 
