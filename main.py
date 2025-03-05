@@ -1,6 +1,10 @@
 from typing import Any
-import httpx
+
+from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP
+from dotenv import load_dotenv
+
+load_dotenv()  # load environment variables from .env
 
 # Initialize FastMCP server
 mcp = FastMCP("congressgov")
