@@ -37,10 +37,15 @@ A client implementation for MCP with Anthropic integration.
    - Create a `.env` file in the project root with the following content:
      ```
      ANTHROPIC_API_KEY=your_api_key_here
-     CONGRESS_GOV_KEY=congress_gov_api_key
      ```
    - Replace `your_api_key_here` with your actual Anthropic API key
+   - Add the following to `~/.zshrc`:
+   ```
+   CONGRESS_GOV_KEY=congress_gov_api_key
+   ```
    - Replace `congress_gov_api_key` with your [Congress.gov API key](https://api.congress.gov/sign-up/)
+   - Run `source ~/.zshrc` from all open terminals
+
 
 5. Running:
    `uv run python client.py congress/congress.py`
