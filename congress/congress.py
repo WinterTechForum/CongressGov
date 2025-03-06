@@ -3,6 +3,7 @@ from typing import Any
 from mcp.server import FastMCP
 from dotenv import load_dotenv, find_dotenv
 from cdg_client import CDGClient
+from fdtreasury_client import FDTreasuryClient
 from pathlib import Path
 import logging
 import os
@@ -326,6 +327,18 @@ async def get_current_congress() -> str:
     """
     url = "congress/current"
     client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return "Unable to fetch details for the current congress, or no data found."
+    return data
+
+
+@mcp.tool()
+async def get_debt_outstanding() -> str:
+    """Get info about outstanding debt. Updated once per fiscal year"""
+    url = "accounting/od/debt_outstanding"
+    client = FDTreasuryClient()
     data, status = client.get(url)
     if status != 200:
         logger.error(status)
