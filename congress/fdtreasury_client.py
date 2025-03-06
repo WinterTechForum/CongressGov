@@ -15,26 +15,22 @@ class _MethodWrapper:
 
     def __call__(self, endpoint, *args, **kwargs):  # full signature passed here
         logger = logging.getLogger(__name__)
-        try:
-            response = self._method(
-                urljoin(self._parent.base_url, endpoint), *args, **kwargs
-            )
-            logger.debug("%s %d",response.url, response.status_code)
-            # unpack
-            if response.headers.get("content-type", "").startswith("application/json"):
-                return response.json(), response.status_code
-            else:
-                return response.content, response.status_code
-        except Exception as e:
-            logger.error("failed getting FD Treasury Data  %s",e)
-            return "FD Treasury API Failure",-1
+        response = self._method(
+            urljoin(self._parent.base_url, endpoint), *args, **kwargs
+        )
+        logger.debug("%s %d",response.url, response.status_code)
+        # unpack
+        if response.headers.get("content-type", "").startswith("application/json"):
+            return response.json(), response.status_code
+        else:
+            return response.content, response.status_code
 
 class FDTreasuryClient:
     def __init__(
             self,
             api_version=API_VERSION,
             # response_format=RESPONSE_FORMAT,
-            raise_on_error=True,
+            raise_on_error=False,
     ):
         self.base_url = urljoin(ROOT_URL, api_version) + "/"
         self._session = requests.Session()

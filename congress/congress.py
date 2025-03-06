@@ -4,6 +4,7 @@ from mcp.server import FastMCP
 from dotenv import load_dotenv, find_dotenv
 from cdg_client import CDGClient
 from fdtreasury_client import FDTreasuryClient
+from congress.fred import FREDClient
 from pathlib import Path
 import logging
 import os
@@ -357,6 +358,31 @@ async def get_outstanding_gold_reservse() -> str:
     return data
 
 
+@mcp.tool()
+async def get_fred_data_releases() -> str:
+    """
+    Get all releases of economic data from the Federal Reserve Bank of St. Louis.
+    :return: a list of releases of economic data
+    """
+    client = FREDClient()
+    data, status = client.get("releases")
+    if status != 200:
+        logger.error(status)
+        return "Unable to fetch FRED economic data releases, or no data found."
+    return data
+
+@mcp.tool()
+async def get_fred_release_series(release_id: str) -> str:
+    """
+    Get the series on a release of economic data from the Federal Reserve Bank of St. Louis.
+    :return: the series on a release of economic data
+    """
+    client = FREDClient()
+    data, status = client.get("release/series",params={"release_id": release_id})
+    if status != 200:
+        logger.error(status)
+        return "Unable to fetch FRED economic data sources, or no data found."
+    return data
 
 if __name__ == "__main__":
     logger.info("Running congress API")
