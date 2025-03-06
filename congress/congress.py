@@ -509,7 +509,7 @@ async def get_debt_outstanding() -> str:
     return data
 
 @mcp.tool()
-async def get_outstanding_gold_reservse() -> str:
+async def get_outstanding_gold_reserves() -> str:
     """Get info about outstanding gold reserves."""
     url = "accounting/od/gold_reserve"
     client = FDTreasuryClient()
