@@ -46,8 +46,11 @@ A client implementation for MCP with Anthropic integration.
    - Replace `congress_gov_api_key` with your [Congress.gov API key](https://api.congress.gov/sign-up/)
    - Run `source ~/.zshrc` from all open terminals
 
+5. (Optional) Set up Google
+   If you want to see environmental data removed from Federal websites:
+   - Set up Google Sheets API access: https://developers.google.com/sheets/api/quickstart/python
 
-5. Running:
+6. Running:
    `uv run python client.py congress/congress.py`
 
    If you have a separate tools server, replace `congress/congress.py` with the location of your server

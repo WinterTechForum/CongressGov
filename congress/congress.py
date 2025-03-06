@@ -7,8 +7,7 @@ from fdtreasury_client import FDTreasuryClient
 from fred import FREDClient
 from pathlib import Path
 import logging
-import os
-import json
+from removed_env_data_client import RemovedEnvDataClient
 
 fh = logging.FileHandler('congress_api.log')
 fh.setLevel(logging.DEBUG)
@@ -383,6 +382,14 @@ async def get_fred_release_series(release_id: str) -> str:
         logger.error(status)
         return "Unable to fetch FRED economic data sources, or no data found."
     return data
+
+# TODO: Move this to removed_env_data.py
+@mcp.tool()
+async def get_removed_env_data() -> dict:
+    """
+    Gets environmental data removed from US Federal Websites
+    """
+    return RemovedEnvDataClient.read_and_parse_csv()
 
 if __name__ == "__main__":
     logger.info("Running congress API")
