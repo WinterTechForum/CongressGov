@@ -373,7 +373,7 @@ async def get_daily_treasury_statement() -> str:
 
 
 @mcp.tool()
-async def get_daily_treasury_statement() -> str:
+async def get_daily_treasury_operating_cash_activities() -> str:
     """
     This table represents deposits and withdrawals from the Treasury General Account.
     A summary of changes to the Treasury General Account can be found in the Operating Cash Balance table.
