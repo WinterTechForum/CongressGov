@@ -8,6 +8,8 @@ from fred import FREDClient
 from pathlib import Path
 import logging
 from removed_env_data_client import RemovedEnvDataClient
+import os
+import json
 
 fh = logging.FileHandler('congress_api.log')
 fh.setLevel(logging.DEBUG)
@@ -30,6 +32,22 @@ def format_bill(bill):
             f"Latest Action: {bill['latestAction']['actionDate']} - {bill['latestAction']['text']}\n"
             f"Title: {bill['title']}\n"
             f"URL: {bill['url']}")
+
+# @mcp.tool()
+# def generate_jq_filter_command(field_query: str, example: Dict|List) -> str:
+#     """Generates a JQ command useful for filtering objects or lists objects given a specific query for a filter
+
+#     Example:
+
+#     Args:
+#         field_query (str): A name or a comma separated set of names of fields within an object to filter down to.
+#         example (Dict|List): The example object that the jq command will be run on.
+
+#     Returns:
+#         str: A jq command that can be used to filter the responses of other tools.
+#     """
+#     if isinstance(example, dict):
+        
 
 @mcp.tool()
 async def get_bills() -> str:
@@ -332,6 +350,151 @@ async def get_current_congress() -> str:
         logger.error(status)
         return "Unable to fetch details for the current congress, or no data found."
     return data
+
+@mcp.tool()
+async def get_all_members() -> str:
+    """Get a list of all congressional members.
+
+    Returns:
+        str: A list of all congressional members.
+    """
+    url = "member"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return "Unable to fetch members, or no data found."
+    return data
+
+@mcp.tool()
+async def get_member_details(bioguide_id: str) -> str:
+    """Get detailed information for a specific congressional member.
+
+    Args:
+        bioguide_id (str): The Bioguide ID of the member.
+
+    Returns:
+        str: Detailed information about the specified member.
+    """
+    url = f"member/{bioguide_id}"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return f"Unable to fetch details for member {bioguide_id}, or no data found."
+    return data
+
+@mcp.tool()
+async def get_member_sponsored_legislation(bioguide_id: str) -> str:
+    """Get the list of legislation sponsored by a specified congressional member.
+
+    Args:
+        bioguide_id (str): The Bioguide ID of the member.
+
+    Returns:
+        str: A list of legislation sponsored by the member.
+    """
+    url = f"member/{bioguide_id}/sponsored-legislation"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return f"Unable to fetch sponsored legislation for member {bioguide_id}, or no data found."
+    return data
+
+@mcp.tool()
+async def get_member_cosponsored_legislation(bioguide_id: str) -> str:
+    """Get the list of legislation cosponsored by a specified congressional member.
+
+    Args:
+        bioguide_id (str): The Bioguide ID of the member.
+
+    Returns:
+        str: A list of legislation cosponsored by the member.
+    """
+    url = f"member/{bioguide_id}/cosponsored-legislation"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return f"Unable to fetch cosponsored legislation for member {bioguide_id}, or no data found."
+    return data
+
+@mcp.tool()
+async def get_members_by_congress(congress: int) -> str:
+    """Get a list of members in a specific congressional session.
+
+    Args:
+        congress (int): The congressional session number.
+
+    Returns:
+        str: A list of members for the specified congress.
+    """
+    url = f"member/congress/{congress}?limit=250"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return f"Unable to fetch members for Congress {congress}, or no data found."
+    return data
+
+@mcp.tool()
+async def get_members_by_state(state_code: str) -> str:
+    """Get a list of members filtered by state.
+
+    Args:
+        state_code (str): The two-letter state abbreviation.
+
+    Returns:
+        str: A list of members representing the specified state.
+    """
+    url = f"member/{state_code}"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return f"Unable to fetch members for state {state_code}, or no data found."
+    return data
+
+@mcp.tool()
+async def get_members_by_state_and_district(state_code: str, district: int) -> str:
+    """Get a list of members filtered by state and district.
+
+    Args:
+        state_code (str): The two-letter state abbreviation.
+        district (int): The congressional district number.
+
+    Returns:
+        str: A list of members representing the specified state and district.
+    """
+    url = f"member/{state_code}/{district}"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return f"Unable to fetch members for state {state_code}, district {district}, or no data found."
+    return data
+
+@mcp.tool()
+async def get_members_by_congress_state_and_district(congress: int, state_code: str, district: int) -> str:
+    """Get a list of members filtered by congress, state, and district.
+
+    Args:
+        congress (int): The congressional session number.
+        state_code (str): The two-letter state abbreviation.
+        district (int): The congressional district number.
+
+    Returns:
+        str: A list of members matching the specified criteria.
+    """
+    url = f"member/congress/{congress}/{state_code}/{district}"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return f"Unable to fetch members for Congress {congress}, state {state_code}, district {district}, or no data found."
+    return data
+
 
 
 @mcp.tool()
