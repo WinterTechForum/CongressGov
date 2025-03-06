@@ -56,7 +56,7 @@ async def get_bills() -> str:
     Returns:
         str: A formatted list of recent bills.
     """
-    url = "bill?limit=250"
+    url = "bill?limit=100"
     client = CDGClient()
     data,status = client.get(url)
     if status != 200:
@@ -76,7 +76,7 @@ async def get_bills_by_congress(congress: int) -> str:
     Returns:
         str: A formatted list of bills from the specified congress.
     """
-    url = f"bill/{congress}?limit=250"
+    url = f"bill/{congress}?limit=100"
     client = CDGClient()
     data,status = client.get(url)
     if status != 200:
@@ -95,7 +95,7 @@ async def get_bills_by_congress_and_type(congress: int, bill_type: str) -> str:
     Returns:
         str: A formatted list of bills matching the criteria.
     """
-    url = f"bill/{congress}/{bill_type.lower()}?limit=250"
+    url = f"bill/{congress}/{bill_type.lower()}?limit=100"
     client = CDGClient()
     data, status = client.get(url)
     if status != 200:
@@ -430,7 +430,7 @@ async def get_members_by_congress(congress: int) -> str:
     Returns:
         str: A list of members for the specified congress.
     """
-    url = f"member/congress/{congress}?limit=250"
+    url = f"member/congress/{congress}?limit=40"
     client = CDGClient()
     data, status = client.get(url)
     if status != 200:
@@ -588,6 +588,191 @@ async def get_fred_release_series(release_id: str) -> str:
         logger.error(status)
         return "Unable to fetch FRED economic data sources, or no data found."
     return data
+
+@mcp.tool()
+async def get_all_committees() -> str:
+    """Get a list of all congressional committees.
+
+    Returns:
+        str: A list of all congressional committees.
+    """
+    url = "committee?limit=40"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return "Unable to fetch committees, or no data found."
+    return data
+
+@mcp.tool()
+async def get_committees_by_chamber(chamber: str) -> str:
+    """Get a list of congressional committees filtered by chamber.
+
+    Args:
+        chamber (str): The chamber of Congress ("house" or "senate").
+
+    Returns:
+        str: A list of committees for the specified chamber.
+    """
+    url = f"committee/{chamber}?limit=40"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return f"Unable to fetch committees for the {chamber} chamber, or no data found."
+    return data
+
+@mcp.tool()
+async def get_committees_by_congress(congress: int) -> str:
+    """Get a list of congressional committees filtered by congress.
+
+    Args:
+        congress (int): The congressional session number.
+
+    Returns:
+        str: A list of committees for the specified congress.
+    """
+    url = f"committee/{congress}?limit=40"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return f"Unable to fetch committees for Congress {congress}, or no data found."
+    return data
+
+@mcp.tool()
+async def get_committees_by_congress_and_chamber(congress: int, chamber: str) -> str:
+    """Get a list of congressional committees filtered by congress and chamber.
+
+    Args:
+        congress (int): The congressional session number.
+        chamber (str): The chamber of Congress ("house" or "senate").
+
+    Returns:
+        str: A list of committees matching the criteria.
+    """
+    url = f"committee/{congress}/{chamber}?limit=40"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return f"Unable to fetch committees for Congress {congress} in the {chamber} chamber, or no data found."
+    return data
+
+@mcp.tool()
+async def get_committee_details(chamber: str, committee_code: str) -> str:
+    """Get detailed information about a specific congressional committee.
+
+    Args:
+        chamber (str): The chamber of Congress ("house" or "senate").
+        committee_code (str): The committee's unique code.
+
+    Returns:
+        str: Detailed information about the specified committee.
+    """
+    url = f"committee/{chamber}/{committee_code}"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return f"Unable to fetch details for committee {committee_code} in the {chamber} chamber, or no data found."
+    return data
+
+@mcp.tool()
+async def get_committee_bills(chamber: str, committee_code: str) -> str:
+    """Get a list of legislation associated with a specified congressional committee.
+
+    Args:
+        chamber (str): The chamber of Congress ("house" or "senate").
+        committee_code (str): The committee's unique code.
+
+    Returns:
+        str: A list of bills associated with the specified committee.
+    """
+    url = f"committee/{chamber}/{committee_code}/bills?limit=40"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return f"Unable to fetch bills for committee {committee_code} in the {chamber} chamber, or no data found."
+    return data
+
+@mcp.tool()
+async def get_committee_reports(chamber: str, committee_code: str) -> str:
+    """Get a list of committee reports associated with a specified congressional committee.
+
+    Args:
+        chamber (str): The chamber of Congress ("house" or "senate").
+        committee_code (str): The committee's unique code.
+
+    Returns:
+        str: A list of committee reports associated with the specified committee.
+    """
+    url = f"committee/{chamber}/{committee_code}/reports?limit=40"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return f"Unable to fetch reports for committee {committee_code} in the {chamber} chamber, or no data found."
+    return data
+
+@mcp.tool()
+async def get_committee_nominations(chamber: str, committee_code: str) -> str:
+    """Get a list of nominations associated with a specified congressional committee.
+
+    Args:
+        chamber (str): The chamber of Congress ("house" or "senate").
+        committee_code (str): The committee's unique code.
+
+    Returns:
+        str: A list of nominations associated with the specified committee.
+    """
+    url = f"committee/{chamber}/{committee_code}/nominations?limit=40"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return f"Unable to fetch nominations for committee {committee_code} in the {chamber} chamber, or no data found."
+    return data
+
+@mcp.tool()
+async def get_committee_house_communications(chamber: str, committee_code: str) -> str:
+    """Get a list of House communications associated with a specified congressional committee.
+
+    Args:
+        chamber (str): The chamber of Congress ("house" or "senate").
+        committee_code (str): The committee's unique code.
+
+    Returns:
+        str: A list of House communications associated with the specified committee.
+    """
+    url = f"committee/{chamber}/{committee_code}/house-communication?limit=40"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return f"Unable to fetch House communications for committee {committee_code} in the {chamber} chamber, or no data found."
+    return data
+
+@mcp.tool()
+async def get_committee_senate_communications(chamber: str, committee_code: str) -> str:
+    """Get a list of Senate communications associated with a specified congressional committee.
+
+    Args:
+        chamber (str): The chamber of Congress ("house" or "senate").
+        committee_code (str): The committee's unique code.
+
+    Returns:
+        str: A list of Senate communications associated with the specified committee.
+    """
+    url = f"committee/{chamber}/{committee_code}/senate-communication?limit=40"
+    client = CDGClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return f"Unable to fetch Senate communications for committee {committee_code} in the {chamber} chamber, or no data found."
+    return data
+
 
 # TODO: Move this to removed_env_data.py
 @mcp.tool()
