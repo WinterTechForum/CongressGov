@@ -345,6 +345,18 @@ async def get_debt_outstanding() -> str:
         return "Unable to fetch details for the current congress, or no data found."
     return data
 
+@mcp.tool()
+async def get_outstanding_gold_reservse() -> str:
+    """Get info about outstanding gold reserves."""
+    url = "accounting/od/gold_reserve"
+    client = FDTreasuryClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return "Unable to fetch details for the current congress, or no data found."
+    return data
+
+
 
 if __name__ == "__main__":
     logger.info("Running congress API")
