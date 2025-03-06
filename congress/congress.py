@@ -356,6 +356,49 @@ async def get_outstanding_gold_reservse() -> str:
         return "Unable to fetch details for the current congress, or no data found."
     return data
 
+@mcp.tool()
+async def get_daily_treasury_statement() -> str:
+    """
+    This table represents the Treasury General Account balance.
+    Additional detail on changes to the Treasury General Account can be found in the Deposits and Withdrawals of Operating Cash table.
+    All figures are rounded to the nearest million.
+    """
+    url = "accounting/dts/operating_cash_balance"
+    client = FDTreasuryClient()
+    data, status = client.get(url)
+    if status != 200:
+        logger.error(status)
+        return "Unable to fetch the daily treasury statement, or no data found."
+    return data
+
+
+@mcp.tool()
+async def get_daily_treasury_statement() -> str:
+    """
+    This table represents deposits and withdrawals from the Treasury General Account.
+    A summary of changes to the Treasury General Account can be found in the Operating Cash Balance table.
+    All figures are rounded to the nearest million.
+    """
+    client = FDTreasuryClient()
+    data, status = client.get("accounting/dts/deposits_withdrawals_operating_cash")
+    if status != 200:
+        logger.error(status)
+        return "Unable to fetch details on deposits and withdrawls, or no data found."
+    return data
+
+
+@mcp.tool()
+async def get_public_debt_transactions() -> str:
+    """
+    This table represents the issues and redemption of marketable and nonmarketable securities.
+    All figures are rounded to the nearest million.
+    """
+    client = FDTreasuryClient()
+    data, status = client.get("accounting/dts/public_debt_transactions")
+    if status != 200:
+        logger.error(status)
+        return "Unable to fetch details of public debt transactions, or no data found."
+    return data
 
 @mcp.tool()
 async def get_fred_data_releases() -> str:
