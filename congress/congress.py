@@ -4,7 +4,7 @@ from mcp.server import FastMCP
 from dotenv import load_dotenv, find_dotenv
 from cdg_client import CDGClient
 from fdtreasury_client import FDTreasuryClient
-from congress.fred import FREDClient
+from fred import FREDClient
 from pathlib import Path
 import logging
 import os
