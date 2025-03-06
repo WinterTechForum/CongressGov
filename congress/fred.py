@@ -20,6 +20,9 @@ class _MethodWrapper:
             urljoin(self._parent.base_url, endpoint), *args, **kwargs
         )
         logger.debug("%s %d",response.url, response.status_code)
+        if response.status_code != 200:
+            logger.warning("%s returned %d", response.url, response.status_code)
+
         # unpack
         if response.headers.get("content-type", "").startswith("application/json"):
             return response.json(), response.status_code
@@ -29,7 +32,7 @@ class _MethodWrapper:
 class FREDClient:
     def __init__(
             self,
-            api_key=os.environ.get("FRED_API_KEY"),
+            api_key=os.getenv("FRED_API_KEY"),
             response_format=RESPONSE_FORMAT,
             raise_on_error=False,
     ):
