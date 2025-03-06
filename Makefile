@@ -1,3 +1,6 @@
+run:
+	uv run client.py congress/congress.py
+
 run-wbs: 
 	uv sync
 	./.venv/bin/activate
