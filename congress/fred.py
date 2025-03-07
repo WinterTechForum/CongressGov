@@ -2,9 +2,12 @@ import requests
 from urllib.parse import urljoin, quote_plus
 import os
 import logging
+from dotenv import load_dotenv
 
 ROOT_URL = "https://api.stlouisfed.org/fred/"
 RESPONSE_FORMAT = "json"
+load_dotenv(".env")
+
 
 class _MethodWrapper:
     """ Wrap request method to facilitate queries.  Supports requests signature. """
@@ -32,7 +35,7 @@ class _MethodWrapper:
 class FREDClient:
     def __init__(
             self,
-            api_key=os.getenv("FRED_API_KEY"),
+            api_key=os.environ["FRED_API_KEY"],
             response_format=RESPONSE_FORMAT,
             raise_on_error=False,
     ):
