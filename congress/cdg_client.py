@@ -6,6 +6,7 @@
 
 """
 from urllib.parse import urljoin
+from dotenv import load_dotenv
 import os
 import requests
 import logging
@@ -13,6 +14,7 @@ import logging
 API_VERSION = "v3"
 ROOT_URL = "https://api.congress.gov/"
 RESPONSE_FORMAT = "json"
+load_dotenv(".env")
 
 
 class _MethodWrapper:

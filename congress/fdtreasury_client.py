@@ -1,3 +1,7 @@
+"""
+    This module provides a client for the Fiscal Data Treasury API.
+    API Documentation: https://fiscaldata.treasury.gov/api-documentation/#list-of-endpoints
+    """
 from urllib.parse import urljoin
 import requests
 import logging

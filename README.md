@@ -60,6 +60,8 @@ A client implementation for MCP with Anthropic integration.
 The following environment variables are required:
 
 - `ANTHROPIC_API_KEY`: Your Anthropic API key for authentication
+- `CONGRESS_API_KEY`: API key for congress.gov: https://api.congress.gov/sign-up/
+- `FRED_API_KEY`: API key for FRED, register at https://fredaccount.stlouisfed.org/apikeys
 
 ## Note
 

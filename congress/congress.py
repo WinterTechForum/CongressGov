@@ -1,7 +1,12 @@
+"""
+MDC API for Congress.gov
+API docs https://api.congress.gov/#/
+Requires an API key: https://api.congress.gov/sign-up/
+
+"""
 from typing import Any
 
 from mcp.server import FastMCP
-from dotenv import load_dotenv, find_dotenv
 from cdg_client import CDGClient
 from fdtreasury_client import FDTreasuryClient
 from fred import FREDClient
@@ -17,13 +22,6 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
-
-# load environment variables from .env in project root
-env_path = f"{Path(__file__).parent.parent}/.env"
-logger.info("loading from %s", env_path)
-dotenv_result = load_dotenv(env_path)
-if not dotenv_result:
-    logger.error(".env not found or not readable")
 
 mcp = FastMCP("congress")
 
