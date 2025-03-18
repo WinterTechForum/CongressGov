@@ -1,3 +1,10 @@
+"""
+This module provides a client for the Federal Reserve Economic Data (FRED) API.
+API Reference: https://fred.stlouisfed.org/docs/api/fred/
+
+This requires an API key, which can be obtained by registering at https://fredaccount.stlouisfed.org/apikeys
+
+"""
 import requests
 from urllib.parse import urljoin, quote_plus
 import os

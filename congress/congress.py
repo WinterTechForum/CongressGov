@@ -1,3 +1,9 @@
+"""
+MDC API for Congress.gov
+API docs https://api.congress.gov/#/
+Requires an API key: https://api.congress.gov/sign-up/
+
+"""
 from typing import Any
 
 from mcp.server import FastMCP
